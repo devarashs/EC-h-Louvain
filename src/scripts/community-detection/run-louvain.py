@@ -2,16 +2,27 @@ import networkx as nx
 import community as community_louvain
 import pickle
 import csv
+import json  # Add missing import
 import time
 import os
 import datetime
 from pathlib import Path
 
-# Variables for easy modification
-INPUT_GRAPH_PATH = "data/2-section/hyperedges-senate-committees_20250510-2section_20250510_203202_634cb0ab.pickle"
-OUTPUT_CSV_PATH = "src/results/louvain_scores.csv"
+# Use absolute paths or make sure paths are relative to project root
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+INPUT_GRAPH_PATH = os.path.join(BASE_DIR, "data/2-section/hyperedges-senate-committees_20250510-2section_20250510_203202_634cb0ab.pickle")
+OUTPUT_CSV_PATH = os.path.join(BASE_DIR, "src/results/louvain_scores.csv")
 ALGORITHM_NAME = "python_louvain"
 INITIAL_PARTITION_PATH = None  # Set to a path if you want to use an initial partition
+
+
+print(f"BASE_DIR: {BASE_DIR}")
+print(f"INPUT_GRAPH_PATH: {INPUT_GRAPH_PATH}")
+print(f"OUTPUT_CSV_PATH: {OUTPUT_CSV_PATH}")
+print(f"ALGORITHM_NAME: {ALGORITHM_NAME}")
+print(f"INITIAL_PARTITION_PATH: {INITIAL_PARTITION_PATH}")
+
+# Rest of the code remains the same...
 
 def main():
     # Start timing the total runtime
@@ -102,6 +113,10 @@ def main():
 
         writer.writerow(data)
 
+
+    # Add this after writing to the CSV file
+    print(f"File exists after writing: {os.path.exists(OUTPUT_CSV_PATH)}")
+    print(f"File size: {os.path.getsize(OUTPUT_CSV_PATH) if os.path.exists(OUTPUT_CSV_PATH) else 0} bytes")
     print(f"Results saved to {OUTPUT_CSV_PATH}")
     print(f"Found {num_clusters} communities with modularity {modularity:.4f}")
     print(f"Clustering time: {clustering_time:.4f} seconds")
