@@ -14,8 +14,8 @@ except ImportError:
     os.system("pip install hypernetx")
     import hypernetx as hnx
 
-INPUT_HYPERGRAPH_PATH = "hyperedges-senate-committees.txt"
-OUTPUT_DIR = "data/partitions/senate-committees/"
+INPUT_HYPERGRAPH_PATH = "dataset.txt"
+# OUTPUT_DIR = "data/partitions/senate-committees/"
 
 
 def load_hyperedges(file_path):
