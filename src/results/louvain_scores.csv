@@ -1,3 +1,5 @@
 algorithm,dataset,num_clusters,modularity,clustering_time,total_runtime,num_nodes,num_edges,initial_partition,date,timestamppython_louvain
 ec_louvain_cluster_labels.npy,hyperedges-senate-committees_20250510-2section_20250510_234741_634cdc66.pickle,2,0.23855168513107708,0.11588549613952637,0.13253116607666016,282,14208,cluster_labels.npy,2025-05-10,23:54:14
 ec_louvain_cluster_labels.npy,hyperedges-senate-committees_20250510-2section_20250510_234741_634cdc66.pickle,2,0.23855168513107708,0.12068891525268555,0.13832616806030273,282,14208,cluster_labels.npy,2025-05-10,23:55:52
+python_louvain,hyperedges-senate-committees_20250510-2section_20250510_234741_634cdc66.pickle,4,0.2463153163853254,0.17015576362609863,0.1755969524383545,282,14208,None,2025-05-10,23:56:35
+python_louvain,hyperedges-senate-committees_20250510-2section_20250510_234741_634cdc66.pickle,4,0.2463153163853254,0.14327073097229004,0.1502244472503662,282,14208,None,2025-05-10,23:56:57
