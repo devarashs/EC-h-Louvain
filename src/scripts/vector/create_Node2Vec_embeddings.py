@@ -6,7 +6,7 @@ import datetime
 
 # Input and output paths as variables for easy modification
 INPUT_GRAPH_PATH = "data/2-section/hyperedges-senate-committees_20250510-2section_20250510_203202_634cb0ab.pickle"
-OUTPUT_DIR = "data/partitions/senate-committees/"
+OUTPUT_DIR = "data/vectors/senate-committees/"
 
 def main():
     # Ensure output directory exists
