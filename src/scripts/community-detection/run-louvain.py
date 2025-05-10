@@ -11,7 +11,7 @@ from pathlib import Path
 # Use absolute paths or make sure paths are relative to project root
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 INPUT_GRAPH_PATH = os.path.join(BASE_DIR, "data/2-section/hyperedges-senate-committees_20250510-2section_20250510_203202_634cb0ab.pickle")
-OUTPUT_CSV_PATH = os.path.join(BASE_DIR, "src/results/louvain_scores.csv")
+OUTPUT_CSV_PATH = os.path.join(BASE_DIR, "results/louvain_scores.csv")
 ALGORITHM_NAME = "python_louvain"
 INITIAL_PARTITION_PATH = None  # Set to a path if you want to use an initial partition
 
