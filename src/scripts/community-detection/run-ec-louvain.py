@@ -27,135 +27,187 @@ def save_metrics(metrics_dict, output_file):
         writer.writerow(metrics_dict)
 
 
+def load_initial_clusters(clusters_dir):
+    """
+    Load all cluster files from the specified directory.
+    Returns a list of (name, partition) tuples.
+    """
+    cluster_files = []
+
+    # Look for cluster files
+    for f in os.listdir(clusters_dir):
+        file_path = os.path.join(clusters_dir, f)
+
+        # Skip directories
+        if os.path.isdir(file_path):
+            continue
+
+        # Process different file types
+        if f.endswith('.npy'):
+            try:
+                # Load npy files (usually contain cluster labels)
+                labels = np.load(file_path)
+                partition = {i: int(label) for i, label in enumerate(labels)}
+                cluster_files.append((f, partition))
+                print(f"Loaded {f}: {len(set(partition.values()))} clusters")
+            except Exception as e:
+                print(f"Error loading {f}: {e}")
+
+        elif f.endswith('.gpickle'):
+            try:
+                # Load NetworkX graphs with cluster attributes
+                G = nx.read_gpickle(file_path)
+                partition = {}
+                for node, attrs in G.nodes(data=True):
+                    if 'cluster' in attrs:
+                        partition[node] = attrs['cluster']
+                    else:
+                        print(f"Warning: Node {node} in {f} has no cluster attribute")
+                        partition[node] = 0
+
+                if partition:
+                    cluster_files.append((f, partition))
+                    print(f"Loaded {f}: {len(set(partition.values()))} clusters")
+            except Exception as e:
+                print(f"Error loading {f}: {e}")
+
+        elif f.endswith('.json'):
+            try:
+                # Load JSON partition files
+                with open(file_path, 'r') as json_file:
+                    partition = json.load(json_file)
+
+                # Convert string keys to integers if needed
+                partition = {int(k) if isinstance(k, str) and k.isdigit() else k: v
+                             for k, v in partition.items()}
+
+                cluster_files.append((f, partition))
+                print(f"Loaded {f}: {len(set(partition.values()))} clusters")
+            except Exception as e:
+                print(f"Error loading {f}: {e}")
+
+    return cluster_files
+
+
 def main():
     """
-    Implement EC-Louvain community detection:
-    1. Start Louvain with an initial partition instead of singleton partition
-    2. Optimize modularity from this starting point
+    Improved EC-Louvain implementation:
+    1. Load multiple cluster files as potential initial partitions
+    2. Load the appropriate graph structure
+    3. Run Louvain with each initial partition
+    4. Report the best results
     """
     # Start timing the entire process
     start_time = time.time()
 
     # Paths
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    partition_path = os.path.join(base_dir, "data/partitions/senate-committees/partition.json")
-    embeddings_path = os.path.join(base_dir, "data/vectors/senate-committees/node2vec_embeddings_20250510_210250.pickle")
+    clusters_dir = os.path.join(base_dir, "data/clusters/senate-committees")
+
+    # Instead of using embeddings, use the original 2-section graph
+    graph_path = os.path.join(base_dir, "data/2-section/hyperedges-senate-committees_20250510-2section_20250510_203202_634cb0ab.pickle")
 
     print(f"Base directory: {base_dir}")
-    print(f"Partition path: {partition_path}")
-    print(f"Embeddings path: {embeddings_path}")
+    print(f"Clusters directory: {clusters_dir}")
+    print(f"Graph path: {graph_path}")
 
     # Create output directories if they don't exist
     os.makedirs(os.path.join(base_dir, "data/partitions"), exist_ok=True)
     os.makedirs(os.path.join(base_dir, "data/visualizations"), exist_ok=True)
     os.makedirs(os.path.join(base_dir, "results"), exist_ok=True)
 
-    # Load initial partition
-    print(f"Loading initial partition from {partition_path}")
-    with open(partition_path, 'r') as f:
-        initial_partition = json.load(f)
+    # Load the graph
+    print(f"Loading graph from {graph_path}...")
+    try:
+        with open(graph_path, 'rb') as f:
+            G = pickle.load(f)
 
-    # Convert keys to integers if stored as strings in the JSON
-    initial_partition = {int(k) if isinstance(k, str) and k.isdigit() else k: v
-                         for k, v in initial_partition.items()}
+        # Check if G is a NetworkX graph
+        if not isinstance(G, nx.Graph):
+            print("Warning: Loaded object is not a NetworkX graph. Attempting to convert...")
+            G = nx.Graph(G)
 
-    # Load the embedded graph data
-    print(f"Loading embeddings from {embeddings_path}")
-    with open(embeddings_path, 'rb') as f:
-        embeddings = pickle.load(f)
+        print(f"Graph has {G.number_of_nodes()} nodes and {G.number_of_edges()} edges")
+    except Exception as e:
+        print(f"Error loading graph: {e}")
+        return
 
-    # Process the embeddings data to create a graph
-    G = create_graph_from_embeddings(embeddings)
-    print(f"Graph has {G.number_of_nodes()} nodes and {G.number_of_edges()} edges")
+    # Load all available cluster files
+    cluster_files = load_initial_clusters(clusters_dir)
 
-    # Ensure all graph nodes exist in the partition
-    for node in G.nodes():
-        if str(node) not in initial_partition and node not in initial_partition:
-            print(f"Warning: Node {node} not in initial partition, adding default community")
-            initial_partition[node] = 0  # Assign to default community
+    if not cluster_files:
+        print(f"No valid cluster files found in {clusters_dir}")
+        return
 
-    # Run EC-Louvain (Louvain with initial partition)
-    print("Running EC-Louvain algorithm...")
-    clustering_start_time = time.time()
-    partition = community_louvain.best_partition(G, partition=initial_partition)
-    clustering_time = time.time() - clustering_start_time
+    best_modularity = -1
+    best_partition = None
+    best_file = None
 
-    # Calculate modularity
-    modularity = community_louvain.modularity(partition, G)
-    print(f"Modularity: {modularity}")
+    # Process each cluster file
+    for cluster_file, initial_partition in cluster_files:
+        print(f"\nProcessing clusters from {cluster_file}...")
 
-    # Count number of communities
-    num_communities = len(set(partition.values()))
-    print(f"Number of communities: {num_communities}")
+        # Ensure all graph nodes exist in the partition
+        for node in G.nodes():
+            if node not in initial_partition:
+                print(f"Warning: Node {node} not in partition, adding default community")
+                initial_partition[node] = 0  # Assign to default community
+
+        # Run EC-Louvain with this partition
+        print("Running EC-Louvain algorithm...")
+        clustering_start_time = time.time()
+        partition = community_louvain.best_partition(G, partition=initial_partition)
+        clustering_time = time.time() - clustering_start_time
+
+        # Calculate modularity
+        modularity = community_louvain.modularity(partition, G)
+        print(f"Modularity: {modularity}")
+
+        # Count number of communities
+        num_communities = len(set(partition.values()))
+        print(f"Number of communities: {num_communities}")
+
+        # Keep track of the best result
+        if modularity > best_modularity:
+            best_modularity = modularity
+            best_partition = partition
+            best_file = cluster_file
+
+        # Prepare metrics dictionary
+        metrics = {
+            'algorithm': f'ec_louvain_{cluster_file}',
+            'dataset': os.path.basename(graph_path),
+            'num_clusters': num_communities,
+            'modularity': modularity,
+            'clustering_time': clustering_time,
+            'total_runtime': time.time() - start_time,
+            'num_nodes': G.number_of_nodes(),
+            'num_edges': G.number_of_edges(),
+            'initial_partition': cluster_file,
+            'date': datetime.now().strftime('%Y-%m-%d'),
+            'timestamp': datetime.now().strftime('%H:%M:%S')
+        }
+
+        # Save metrics
+        metrics_path = os.path.join(base_dir, "results/louvain_scores.csv")
+        save_metrics(metrics, metrics_path)
+
+        # Save this partition
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        save_results(partition, base_dir, f"{cluster_file}_{timestamp}")
+
+    # Process the best result
+    if best_partition:
+        print(f"\nBest result from {best_file} with modularity {best_modularity}")
+        analyze_communities(best_partition)
+
+        # Visualize the best communities
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        visualize_communities(G, best_partition, base_dir, f"best_{timestamp}")
 
     # Calculate total runtime
     total_runtime = time.time() - start_time
     print(f"Total runtime: {total_runtime:.2f} seconds")
-
-    # Analyze communities
-    analyze_communities(partition)
-
-    # Save results
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    save_results(partition, base_dir, timestamp)
-
-    # Prepare metrics dictionary
-    metrics = {
-        'algorithm': 'ec_louvain',
-        'dataset': os.path.basename(embeddings_path),
-        'num_clusters': num_communities,
-        'modularity': modularity,
-        'clustering_time': clustering_time,
-        'total_runtime': total_runtime,
-        'num_nodes': G.number_of_nodes(),
-        'num_edges': G.number_of_edges(),
-        'initial_partition': os.path.basename(partition_path),
-        'date': datetime.now().strftime('%Y-%m-%d'),
-        'timestamp': datetime.now().strftime('%H:%M:%S')
-    }
-
-    # Save metrics
-    metrics_path = os.path.join(base_dir, "results/louvain_scores.csv")
-    save_metrics(metrics, metrics_path)
-    print(f"Metrics saved to {metrics_path}")
-
-    # Visualize communities
-    visualize_communities(G, partition, base_dir, timestamp)
-
-def create_graph_from_embeddings(embeddings):
-    """
-    Create a NetworkX graph from node embeddings.
-    Edges are created based on embedding similarity.
-    """
-    G = nx.Graph()
-
-    # Add nodes with embeddings as attributes
-    for node, embedding in embeddings.items():
-        G.add_node(node, embedding=embedding)
-
-    # Add edges based on embedding similarity
-    print("Creating edges based on cosine similarity...")
-    nodes = list(embeddings.keys())
-    edge_count = 0
-
-    for i in range(len(nodes)):
-        if i % 100 == 0 and i > 0:
-            print(f"  Processed {i}/{len(nodes)} nodes, created {edge_count} edges")
-
-        for j in range(i+1, len(nodes)):
-            node1, node2 = nodes[i], nodes[j]
-            emb1, emb2 = np.array(embeddings[node1]), np.array(embeddings[node2])
-
-            # Calculate cosine similarity
-            similarity = np.dot(emb1, emb2) / (np.linalg.norm(emb1) * np.linalg.norm(emb2))
-
-            # Add edge if similarity is above threshold
-            threshold = 0.5  # Adjust this threshold as needed
-            if similarity > threshold:
-                G.add_edge(node1, node2, weight=similarity)
-                edge_count += 1
-
-    return G
 
 
 def analyze_communities(partition):
@@ -189,11 +241,11 @@ def analyze_communities(partition):
         print(f"... and {len(communities) - 5} more communities")
 
 
-def save_results(partition, base_dir, timestamp):
+def save_results(partition, base_dir, file_suffix):
     """
     Save the partition results to a JSON file.
     """
-    output_path = os.path.join(base_dir, f"data/partitions/ec_louvain_result_{timestamp}.json")
+    output_path = os.path.join(base_dir, f"data/partitions/ec_louvain_result_{file_suffix}.json")
 
     # Convert keys to strings for JSON compatibility
     partition_for_json = {str(k): v for k, v in partition.items()}
@@ -204,7 +256,7 @@ def save_results(partition, base_dir, timestamp):
     print(f"Results saved to {output_path}")
 
 
-def visualize_communities(G, partition, base_dir, timestamp):
+def visualize_communities(G, partition, base_dir, file_suffix):
     """
     Visualize the communities in the graph.
     """
@@ -236,7 +288,7 @@ def visualize_communities(G, partition, base_dir, timestamp):
         plt.axis('off')
 
         # Save the visualization
-        viz_path = os.path.join(base_dir, f"data/visualizations/ec_louvain_{timestamp}.png")
+        viz_path = os.path.join(base_dir, f"data/visualizations/ec_louvain_{file_suffix}.png")
         plt.savefig(viz_path, dpi=300, bbox_inches='tight')
         print(f"Visualization saved to {viz_path}")
 
