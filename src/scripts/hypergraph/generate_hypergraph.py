@@ -14,6 +14,9 @@ except ImportError:
     os.system("pip install hypernetx")
     import hypernetx as hnx
 
+INPUT_HYPERGRAPH_PATH = "hyperedges-senate-committees.txt"
+OUTPUT_DIR = "data/partitions/senate-committees/"
+
 
 def load_hyperedges(file_path):
     """
@@ -183,7 +186,7 @@ def generate_hypergraph_name(file_path):
 
 def main():
     parser = argparse.ArgumentParser(description='Generate and visualize hypergraphs.')
-    parser.add_argument('--input', default='data/hyperedges-senate-committees.txt',
+    parser.add_argument('--input', default='data/'+INPUT_HYPERGRAPH_PATH,
                         help='Path to the input file containing hyperedges.')
     parser.add_argument('--output-dir', default='data/hypergraphs',
                         help='Directory to save the generated hypergraph.')
@@ -195,9 +198,9 @@ def main():
         print(f"Input file {args.input} does not exist.")
         # Try to find the file in possible locations
         possible_locations = [
-            'data/hyperedges-senate-committees.txt',
-            '../data/hyperedges-senate-committees.txt',
-            '../../data/hyperedges-senate-committees.txt',
+            'data/'+INPUT_HYPERGRAPH_PATH,
+            '../data/'+INPUT_HYPERGRAPH_PATH,
+            '../../data/'+INPUT_HYPERGRAPH_PATH,
         ]
         for loc in possible_locations:
             if os.path.exists(loc):
