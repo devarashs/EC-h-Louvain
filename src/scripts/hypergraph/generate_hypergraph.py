@@ -170,18 +170,18 @@ def generate_hypergraph_name(file_path):
     """
     Generate a meaningful name for the hypergraph based on the input file.
     """
-    # Get the base name of the file without extension
-    base_name = os.path.splitext(os.path.basename(file_path))[0]
+    # # Get the base name of the file without extension
+    # base_name = os.path.splitext(os.path.basename(file_path))[0]
 
-    # Add a timestamp for uniqueness
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    # # Add a timestamp for uniqueness
+    # timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 
-    # Add a hash of the first part of the file content
-    with open(file_path, 'r') as f:
-        content = f.read(1024)
-    content_hash = hashlib.md5(content.encode()).hexdigest()[:8]
+    # # Add a hash of the first part of the file content
+    # with open(file_path, 'r') as f:
+    #     content = f.read(1024)
+    # content_hash = hashlib.md5(content.encode()).hexdigest()[:8]
 
-    return f"{base_name}_{timestamp}_{content_hash}"
+    return f"hypergraph"
 
 
 def main():

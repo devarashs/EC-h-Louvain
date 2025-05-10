@@ -15,7 +15,7 @@ import time
 import sys
 
 # Input and output paths
-input_file = "data/hypergraphs/hyperedges-senate-committees_20250510_234658_70803e19.pickle"
+input_file = "data/hypergraphs/hypergraph.pickle"
 output_dir = "data/2-section/"
 
 # Create output directory if it doesn't exist
@@ -107,7 +107,7 @@ print(f"  Number of nodes: {two_section_graph.number_of_nodes()}")
 print(f"  Number of edges: {two_section_graph.number_of_edges()}")
 
 # Generate output filename
-output_file = f"{output_dir}/{base_name}-2section_{timestamp}_{hash_value}.pickle"
+output_file = f"{output_dir}/2_section_graph.pickle"
 
 # Save the 2-section graph
 print(f"Saving 2-section graph to {output_file}...")
