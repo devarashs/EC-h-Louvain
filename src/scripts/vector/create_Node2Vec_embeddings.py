@@ -5,7 +5,7 @@ from node2vec import Node2Vec
 import datetime
 
 # Input and output paths as variables for easy modification
-INPUT_GRAPH_PATH = "data/2-section/hyperedges-senate-committees_20250510-2section_20250510_203202_634cb0ab.pickle"
+INPUT_GRAPH_PATH = "data/2-section/hyperedges-senate-committees_20250510-2section_20250510_234741_634cdc66.pickle"
 OUTPUT_DIR = "data/vectors/senate-committees/"
 
 def main():

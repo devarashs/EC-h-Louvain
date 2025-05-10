@@ -102,10 +102,10 @@ def main():
 
     # Paths
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    clusters_dir = os.path.join(base_dir, "data/clusters/senate-committees")
+    clusters_dir = os.path.join(base_dir, "data/clusters")
 
     # Instead of using embeddings, use the original 2-section graph
-    graph_path = os.path.join(base_dir, "data/2-section/hyperedges-senate-committees_20250510-2section_20250510_203202_634cb0ab.pickle")
+    graph_path = os.path.join(base_dir, "data/2-section/hyperedges-senate-committees_20250510-2section_20250510_234741_634cdc66.pickle")
 
     print(f"Base directory: {base_dir}")
     print(f"Clusters directory: {clusters_dir}")

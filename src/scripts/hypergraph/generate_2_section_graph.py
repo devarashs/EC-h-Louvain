@@ -15,7 +15,7 @@ import time
 import sys
 
 # Input and output paths
-input_file = "data/hypergraphs/hyperedges-senate-committees_20250510_203112_70803e19.pickle"
+input_file = "data/hypergraphs/hyperedges-senate-committees_20250510_234658_70803e19.pickle"
 output_dir = "data/2-section/"
 
 # Create output directory if it doesn't exist

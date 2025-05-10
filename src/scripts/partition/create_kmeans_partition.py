@@ -21,7 +21,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Input and output paths - MODIFY THESE
-INPUT_FILE = "data/vectors/senate-committees/node2vec_embeddings_20250510_210250.pickle"
+INPUT_FILE = "data/vectors/senate-committees/node2vec_embeddings_20250510_234928.pickle"
 OUTPUT_DIR = "data/partitions/senate-committees/"
 
 def calculate_modularity(G, partition):

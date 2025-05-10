@@ -1,2 +1,2 @@
 algorithm,dataset,num_clusters,modularity,ami,clustering_time,total_runtime,num_nodes,num_edges,date,timestamp
-kmeans,node2vec_embeddings_20250510_210250.pickle,3,0.46028035197857,-1,0.5398914813995361,10.628070831298828,282,2068,2025-05-10,22:00:08
+kmeans,node2vec_embeddings_20250510_234928.pickle,3,0.44423602601564716,-1,0.6531004905700684,10.761009693145752,282,2060,2025-05-10,23:51:23
