@@ -24,15 +24,26 @@ pip install -r requirements.txt
 
 ## 4. Run the Pipeline
 
-Execute the following scripts in order:
+Execute the following scripts in order to run node2vec -> kmeans -> EC-h-Louvain & EC-Louvain:
 
 ```bash
 python -m scripts.hypergraph.generate_hypergraph
 python -m scripts.hypergraph.generate_2_section_graph
 python -m scripts.vector.create_Node2Vec_embeddings
-python -m scripts.partition.create_kmeans_partition
-python -m scripts.community-detection.run-louvain
-python -m scripts.community-detection.run-ec-louvain
+python -m scripts.partition.node2vec_kmeans_partition
+python -m scripts.community-detection.run-louvain_node2vec
+python -m scripts.community-detection.run-ec-louvain_node2vec
+```
+
+Execute the following scripts in order to run deepwalk -> kmeans -> EC-h-Louvain & EC-Louvain:
+
+```bash
+python -m scripts.hypergraph.generate_hypergraph
+python -m scripts.hypergraph.generate_2_section_graph
+python -m scripts.vector.create_deepwalk_embeddings
+python -m scripts.partition.deepwalk_kmeans_partition
+python -m scripts.community-detection.run-louvain_deepwalk
+python -m scripts.community-detection.run-ec-louvain_deepwalk
 ```
 
 Each script performs a step in the EC-h-Louvain workflow.
