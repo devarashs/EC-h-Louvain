@@ -1,5 +1,6 @@
 algorithm,dataset,num_clusters,modularity,clustering_time,total_runtime,num_nodes,num_edges,initial_partition,date,timestamppython_louvain
-python_louvain,2_section_graph.pickle,3,0.2595800375323976,0.15944981575012207,0.16836047172546387,294,22880,None,2025-05-11,01:49:18
-ec_louvain_partition.json,2_section_graph.pickle,3,0.25958003753239767,0.1545867919921875,0.1752927303314209,294,22880,partition.json,2025-05-11,01:49:19
-ec_louvain_cluster_labels.npy,2_section_graph.pickle,3,0.2595800375323976,0.18248271942138672,0.385051965713501,294,22880,cluster_labels.npy,2025-05-11,01:49:19
-ec_louvain_cluster_summary.json,2_section_graph.pickle,1,0.0,0.1456620693206787,0.5498611927032471,294,22880,cluster_summary.json,2025-05-11,01:49:19
+
+python_louvain,2_section_graph.pickle,3,0.2595768426558145,0.16070890426635742,0.16797518730163574,294,22880,None,2025-05-11,01:53:04
+ec_louvain_partition.json,2_section_graph.pickle,3,0.2595768426558145,0.1334998607635498,0.151963472366333,294,22880,partition.json,2025-05-11,01:53:05
+ec_louvain_cluster_labels.npy,2_section_graph.pickle,3,0.25957684265581443,0.1295006275177002,0.29470348358154297,294,22880,cluster_labels.npy,2025-05-11,01:53:05
+ec_louvain_cluster_summary.json,2_section_graph.pickle,1,0.0,0.1083223819732666,0.41835522651672363,294,22880,cluster_summary.json,2025-05-11,01:53:05
