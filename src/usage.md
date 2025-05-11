@@ -44,6 +44,7 @@ python -m scripts.vector.create_deepwalk_embeddings
 python -m scripts.partition.deepwalk_kmeans_partition
 python -m scripts.community-detection.run-louvain_deepwalk
 python -m scripts.community-detection.run-ec-louvain_deepwalk
+
 ```
 
 Each script performs a step in the EC-h-Louvain workflow.
