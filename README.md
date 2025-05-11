@@ -59,3 +59,4 @@ This work is inspired by:
 
 - **EC-Louvain/Leiden**: [Pankratz et al., 2024](https://doi.org/10.1093/comnet/cnae035)
 - **h-Louvain (Hypergraph Modularity)**: [Kamiński et al., 2024](https://doi.org/10.1093/comnet/cnae041)
+- **Equivariant Hypergraph Diffusion Neural Operators**: [Huang et al., 2022](https://arxiv.org/abs/2207.06680)

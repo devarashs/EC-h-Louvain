@@ -24,3 +24,7 @@ python_louvain-deepwalk,2_section_graph.pickle,6,0.2840350373975989,0.0783863067
 ec_louvain_partition.json-deepwalk,2_section_graph.pickle,6,0.2840350373975989,0.0556645393371582,0.06596255302429199,242,8317,partition.json,2025-05-11,03:32:12
 ec_louvain_cluster_labels.npy-deepwalk,2_section_graph.pickle,6,0.27248904546430297,0.06350278854370117,0.13658905029296875,242,8317,cluster_labels.npy,2025-05-11,03:32:12
 ec_louvain_cluster_summary.json-deepwalk,2_section_graph.pickle,1,0.0,0.04414224624633789,0.1882321834564209,242,8317,cluster_summary.json,2025-05-11,03:32:12
+python_louvain-node2vec,2_section_graph.pickle,46,0.7189561717822515,0.16889333724975586,0.17396807670593262,1434,4256,None,2025-05-11,03:46:06
+ec_louvain_partition.json-node2vec,2_section_graph.pickle,3,0.4685252785541155,0.0879206657409668,0.10199928283691406,1434,4256,partition.json,2025-05-11,03:46:07
+ec_louvain_cluster_labels.npy-node2vec,2_section_graph.pickle,3,0.4992555567284046,0.1276862621307373,0.24225091934204102,1434,4256,cluster_labels.npy,2025-05-11,03:46:07
+ec_louvain_cluster_summary.json-node2vec,2_section_graph.pickle,1,0.0,0.04266715049743652,0.30020618438720703,1434,4256,cluster_summary.json,2025-05-11,03:46:07
