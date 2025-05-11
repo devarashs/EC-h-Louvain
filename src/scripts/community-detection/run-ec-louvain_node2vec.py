@@ -114,6 +114,7 @@ def main():
     # Create output directories if they don't exist
     os.makedirs(os.path.join(base_dir, "data/partitions"), exist_ok=True)
     os.makedirs(os.path.join(base_dir, "data/visualizations"), exist_ok=True)
+    os.makedirs(os.path.join(base_dir, "data/visualizations/ec_louvain_node2vec"), exist_ok=True)
     os.makedirs(os.path.join(base_dir, "results"), exist_ok=True)
 
     # Load the graph
@@ -205,6 +206,10 @@ def main():
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         visualize_communities(G, best_partition, base_dir, f"best_{timestamp}")
 
+        # Create node2vec visualization
+        node2vec_viz_dir = os.path.join(base_dir, "data/visualizations/ec_louvain_node2vec/")
+        visualize_node2vec_communities(G, best_partition, node2vec_viz_dir, f"best_node2vec_{timestamp}")
+
     # Calculate total runtime
     total_runtime = time.time() - start_time
     print(f"Total runtime: {total_runtime:.2f} seconds")
@@ -284,11 +289,11 @@ def visualize_communities(G, partition, base_dir, file_suffix):
             with_labels=False
         )
 
-        plt.title("Communities detected by EC-Louvain")
+        plt.title("Communities detected by EC-Louvain - Node2Vec")
         plt.axis('off')
 
         # Save the visualization
-        viz_path = os.path.join(base_dir, f"data/visualizations/ec_louvain_{file_suffix}.png")
+        viz_path = os.path.join(base_dir, f"data/visualizations/ec_louvain_node2vec/ec_louvain_{file_suffix}.png")
         plt.savefig(viz_path, dpi=300, bbox_inches='tight')
         print(f"Visualization saved to {viz_path}")
 
@@ -296,6 +301,99 @@ def visualize_communities(G, partition, base_dir, file_suffix):
 
     except Exception as e:
         print(f"Error during visualization: {e}")
+
+
+def visualize_node2vec_communities(G, partition, output_dir, file_suffix):
+    """
+    Create enhanced visualization of communities with clear color coding.
+    """
+    # Only visualize if the graph is not too large
+    if G.number_of_nodes() > 1000:
+        print("Graph too large for visualization, skipping node2vec visualization...")
+        return
+
+    try:
+        plt.figure(figsize=(16, 16))
+
+        # Create a more well-separated layout
+        print("Computing layout for node2vec visualization...")
+        pos = nx.spring_layout(G, seed=42, k=0.3)  # Increase k for more spacing
+
+        # Get unique communities
+        communities = set(partition.values())
+        num_communities = len(communities)
+        print(f"Visualizing {num_communities} communities...")
+
+        # Create color map with distinct colors
+        cmap = plt.cm.get_cmap('tab20' if num_communities <= 20 else 'rainbow', max(20, num_communities))
+
+        # Draw edges first (in background)
+        nx.draw_networkx_edges(
+            G, pos,
+            alpha=0.2,
+            width=0.5,
+            edge_color='gray'
+        )
+
+        # Draw nodes by community with better colors
+        for i, comm in enumerate(sorted(communities)):
+            # Get list of nodes in this community
+            nodes = [node for node, com in partition.items() if com == comm]
+
+            # Draw nodes for this community
+            nx.draw_networkx_nodes(
+                G, pos,
+                nodelist=nodes,
+                node_color=[cmap(i % cmap.N)],
+                node_size=80,
+                alpha=0.8,
+                label=f"Community {comm}"
+            )
+
+        # Add labels for larger nodes (optional, can be resource intensive)
+        if G.number_of_nodes() < 300:  # Only label if graph is small enough
+            # Get the top 10% largest communities
+            comm_sizes = {}
+            for comm in communities:
+                comm_sizes[comm] = len([n for n, c in partition.items() if c == comm])
+
+            largest_comms = sorted(comm_sizes.items(), key=lambda x: x[1], reverse=True)[:max(3, int(len(communities)*0.1))]
+            largest_comm_ids = [c[0] for c in largest_comms]
+
+            # Get nodes in largest communities
+            important_nodes = {n: n for n, c in partition.items() if c in largest_comm_ids}
+
+            nx.draw_networkx_labels(
+                G, pos,
+                labels=important_nodes,
+                font_size=8,
+                font_color="black",
+                alpha=0.6
+            )
+
+        plt.title(f"Communities detected by EC-Louvain with Node2Vec\nModularity: {community_louvain.modularity(partition, G):.4f}")
+        plt.axis('off')
+
+        # Add legend (limited to prevent overcrowding)
+        if num_communities <= 20:
+            plt.legend(scatterpoints=1, frameon=True, labelspacing=1, loc='lower right')
+
+        # Save the visualization
+        os.makedirs(output_dir, exist_ok=True)
+        viz_path = os.path.join(output_dir, f"{file_suffix}.png")
+        plt.savefig(viz_path, dpi=300, bbox_inches='tight')
+        print(f"Node2Vec visualization saved to {viz_path}")
+
+        # Also save a high resolution version
+        viz_path_hires = os.path.join(output_dir, f"{file_suffix}_hires.png")
+        plt.savefig(viz_path_hires, dpi=600, bbox_inches='tight')
+
+        plt.close()
+
+    except Exception as e:
+        print(f"Error during node2vec visualization: {e}")
+        import traceback
+        traceback.print_exc()
 
 
 if __name__ == "__main__":

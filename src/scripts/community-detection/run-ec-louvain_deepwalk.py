@@ -113,7 +113,7 @@ def main():
 
     # Create output directories if they don't exist
     os.makedirs(os.path.join(base_dir, "data/partitions"), exist_ok=True)
-    os.makedirs(os.path.join(base_dir, "data/visualizations"), exist_ok=True)
+    os.makedirs(os.path.join(base_dir, "data/visualizations/ec_louvain_deepwalk"), exist_ok=True)
     os.makedirs(os.path.join(base_dir, "results"), exist_ok=True)
 
     # Load the graph
@@ -284,11 +284,11 @@ def visualize_communities(G, partition, base_dir, file_suffix):
             with_labels=False
         )
 
-        plt.title("Communities detected by EC-Louvain")
+        plt.title("Communities detected by EC-Louvain - DeepWalk")
         plt.axis('off')
 
         # Save the visualization
-        viz_path = os.path.join(base_dir, f"data/visualizations/ec_louvain_{file_suffix}.png")
+        viz_path = os.path.join(base_dir, f"data/visualizations/ec_louvain_deepwalk/ec_louvain_{file_suffix}.png")
         plt.savefig(viz_path, dpi=300, bbox_inches='tight')
         print(f"Visualization saved to {viz_path}")
 
