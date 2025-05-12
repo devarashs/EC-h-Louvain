@@ -5,3 +5,4 @@ EC-Louvain,Node2Vec+kmeans,242,8317,0.0
 EC-Louvain,deepwalk+kmeans,242,8317,0.2840350373975989
 EC-Louvain,deepwalk+kmeans,242,8317,0.2645951268285286
 EC-Louvain,deepwalk+kmeans,242,8317,0.0
+hLouvain,-1,242,12704,0.46409829173758166
