@@ -2,6 +2,8 @@ import os
 import csv
 import networkx as nx
 import community as community_louvain
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 DATASET_PATH = "data/dataset.txt"
 RESULTS_DIR = "results"
@@ -13,6 +15,20 @@ GRAPHML_FILE = os.path.join(VIS_DIR, "projected_graph.graphml")
 
 def file_exists_and_not_empty(path):
     return os.path.isfile(path) and os.path.getsize(path) > 0
+
+def plot_communities(G, partition, out_path):
+    plt.figure(figsize=(10, 8))
+    pos = nx.spring_layout(G, seed=42)
+    cmap = cm.get_cmap('viridis', max(partition.values()) + 1)
+    nx.draw_networkx_nodes(
+        G, pos, partition.keys(), node_size=80,
+        cmap=cmap, node_color=list(partition.values())
+    )
+    nx.draw_networkx_edges(G, pos, alpha=0.5)
+    plt.axis('off')
+    plt.tight_layout()
+    plt.savefig(out_path, format="png")
+    plt.close()
 
 def read_hyperedges(path):
     hyperedges = []
@@ -43,6 +59,10 @@ def main():
     save_graph_visualizations(G)
     partition = community_louvain.best_partition(G)
     modularity = community_louvain.modularity(partition, G)
+
+    # Save community visualization as image
+    os.makedirs(VIS_DIR, exist_ok=True)
+    plot_communities(G, partition, os.path.join(VIS_DIR, "communities.png"))
 
     # Save to pure_louvain_scores.csv
     with open(RESULTS_FILE, mode='a', newline='') as csvfile:
