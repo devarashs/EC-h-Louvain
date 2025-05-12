@@ -102,7 +102,7 @@ def main():
 
     # Paths
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    clusters_dir = os.path.join(base_dir, "data/partitions/deepwalk/")
+    clusters_dir = os.path.join(base_dir, "data/partitions/deepwalk_kmeans/")
 
     # Instead of using embeddings, use the original 2-section graph
     graph_path = os.path.join(base_dir, "data/2-section/2_section_graph.pickle")
