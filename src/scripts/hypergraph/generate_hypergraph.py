@@ -31,7 +31,8 @@ def load_hyperedges(file_path):
                 continue
 
             # Parse the line to get node IDs
-            nodes = [int(node) for node in line.strip().split(',')]
+            # nodes = [int(node) for node in line.strip().split(',')] if using comma-separated values
+            nodes = [int(node) for node in line.strip().split()]
             hyperedges.append(nodes)
 
     print(f"Loaded {len(hyperedges)} hyperedges")
