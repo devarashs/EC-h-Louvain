@@ -48,7 +48,6 @@ python -m scripts.community-detection.run-ec-louvain_deepwalk
 Execute the following scripts in order to run h-louvain:
 
 ```bash
-python -m scripts.hypergraph.generate_hypergraph
 python -m scripts.community-detection.run-h-louvain
 
 ```

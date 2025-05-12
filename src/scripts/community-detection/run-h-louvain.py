@@ -12,7 +12,7 @@ def main():
 
     # Create directories if they don't exist
     results_dir = "results"
-    visualizations_dir = "visualizations/h_louvain_pure"
+    visualizations_dir = "data/visualizations/h_louvain_pure"
     os.makedirs(results_dir, exist_ok=True)
     os.makedirs(visualizations_dir, exist_ok=True)
     print(f"Results will be saved in: {os.path.abspath(results_dir)}")
@@ -61,14 +61,13 @@ def main():
         file_exists_and_not_empty = os.path.isfile(results_file_path) and os.path.getsize(results_file_path) > 0
 
         with open(results_file_path, mode='a', newline='') as csvfile:
-            fieldnames = ["Partition_A", "Modularity_qC", "Output_Alphas", "Alphas_Config", "Change_Mode", "Change_Frequency"]
+            fieldnames = [ "Modularity_qC", "Output_Alphas", "Alphas_Config", "Change_Mode", "Change_Frequency"]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
             if not file_exists_and_not_empty:
                 writer.writeheader()
 
             writer.writerow({
-                "Partition_A": str(A), # Consider json.dumps(A) for easier parsing if complex
                 "Modularity_qC": q2,
                 "Output_Alphas": str(alphas_out),
                 "Alphas_Config": str(alphas_config),
@@ -79,6 +78,12 @@ def main():
 
         # --- Create visualizations ---
         print("Attempting to create visualizations...")
+        print("Type of hL.HG:", type(hL.HG))
+        if isinstance(hL.HG, dict):
+            sample = list(hL.HG.items())[:3]
+            print("Sample edges from hL.HG:", sample)
+        else:
+            print("hL.HG is not a dict. Its value:", hL.HG)
         try:
             # hL.HG should contain the hypergraph data loaded by load_ABCDH_from_file.
             # This typically is a dictionary mapping hyperedge IDs to sets/frozensets of nodes.
@@ -88,19 +93,18 @@ def main():
             else:
                 # Ensure hL.HG is in a format hypernetx.Hypergraph can consume.
                 # If hL.HG is not a dict of iterables, it might need conversion.
-                H_viz = hnx.Hypergraph(hL.HG)
+                H_viz = hL.HG
 
                 # Generate a layout for the hypergraph visualization
                 # Kamada-Kawai layout is often good for network-like structures.
                 # This can be computationally intensive for very large hypergraphs.
                 print("Generating layout for visualization (this may take a moment for large graphs)...")
-                pos = hnx.drawing.kamada_kawai_layout(H_viz)
+                pos = None
                 print("Layout generated.")
 
                 # 1. Visualize the original hypergraph structure
                 plt.figure(figsize=(12, 10))
-                hnx.draw(H_viz, pos=pos, with_node_labels=True, with_edge_labels=False,
-                           node_size=10, font_size_nodes=8)
+                hnx.draw(H_viz, pos=pos, with_node_labels=True, with_edge_labels=False)
                 plt.title("Hypergraph Structure")
                 hypergraph_plot_path = os.path.join(visualizations_dir, "hypergraph_structure.png")
                 plt.savefig(hypergraph_plot_path)
