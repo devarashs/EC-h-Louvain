@@ -351,7 +351,7 @@ def visualize_node2vec_communities(G, partition, output_dir, file_suffix):
             )
 
         # Add labels for larger nodes (optional, can be resource intensive)
-        if G.number_of_nodes() < 300:  # Only label if graph is small enough
+        if G.number_of_nodes() < 1000:  # Only label if graph is small enough
             # Get the top 10% largest communities
             comm_sizes = {}
             for comm in communities:
