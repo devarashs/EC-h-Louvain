@@ -52,6 +52,13 @@ python -m scripts.community-detection.run-h-louvain
 
 ```
 
+Execute the following scripts in order to run pure louvain on hyperedges:
+
+```bash
+python -m scripts.community-detection.run-louvain
+
+```
+
 Each script performs a step in the EC-h-Louvain workflow.
 
 ---
