@@ -72,8 +72,8 @@ def main():
             writer.writerow({
                 "Algorithm": "hLouvain",
                 "isPartition": "-1",
-                "Nodes": len(HG.nodes()),
-                "Edges": len(HG.edges()),
+                "Nodes": len(list(HG.nodes())),
+                "Edges": len(list(HG.edges())),
                 "Modularity": q2
             })
         print(f"Leaderboard saved to {leaderboard_file_path}")
@@ -132,31 +132,31 @@ def main():
                 # 2. Visualize communities on the hypergraph
                 if A: # Check if partition A is not empty
                     plt.figure(figsize=(12, 10))
-
                     nodes_in_viz = list(H_viz.nodes())
                     node_to_community_id = {}
                     for i, community in enumerate(A):
                         for node in community:
                             node_to_community_id[node] = i
 
-                    # Get unique communities to generate a color for each
-                    # Filter out None if A.get() returns None for nodes not in partition
                     valid_community_ids = sorted(list(set(cid for cid in node_to_community_id.values() if cid is not None)))
-
                     if not valid_community_ids:
-                        node_colors = ['lightgrey'] * len(nodes_in_viz) # All nodes unassigned or single color
+                        node_colors = ['lightgrey'] * len(nodes_in_viz)
                     else:
                         cmap = plt.get_cmap('viridis', len(valid_community_ids))
                         community_to_color = {cid: cmap(i) for i, cid in enumerate(valid_community_ids)}
                         node_colors = [community_to_color.get(node_to_community_id[node], 'lightgrey') for node in nodes_in_viz]
 
-                    hnx.draw(H_viz,
-                             pos=pos, # Use the same layout for consistency
-                             with_node_labels=True,
-                             with_edge_labels=False,
-                             node_size=10, font_size_nodes=8,
-                             node_color=node_colors # Pass the list of colors for nodes
-                             )
+                    # Draw hypergraph without node_color
+                    hnx.draw(H_viz, pos=pos, with_node_labels=True, with_edge_labels=False)
+
+                    # Color nodes by community using matplotlib
+                    ax = plt.gca()
+                    for node, color in zip(nodes_in_viz, node_colors):
+                        artist = ax.findobj(match=lambda x: hasattr(x, 'get_label') and x.get_label() == str(node))
+                        if artist:
+                            for a in artist:
+                                a.set_color(color)
+
                     plt.title("Hypergraph Communities")
                     communities_plot_path = os.path.join(visualizations_dir, "hypergraph_communities.png")
                     plt.savefig(communities_plot_path)
