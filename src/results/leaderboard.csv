@@ -1,0 +1,7 @@
+Algorithm,isPartition,Nodes,Edges,Modularity
+EC-Louvain,Node2Vec+kmeans,242,8317,0.2463741401585246
+EC-Louvain,Node2Vec+kmeans,242,8317,0.2678172315008066
+EC-Louvain,Node2Vec+kmeans,242,8317,0.0
+EC-Louvain,deepwalk+kmeans,242,8317,0.2840350373975989
+EC-Louvain,deepwalk+kmeans,242,8317,0.2645951268285286
+EC-Louvain,deepwalk+kmeans,242,8317,0.0

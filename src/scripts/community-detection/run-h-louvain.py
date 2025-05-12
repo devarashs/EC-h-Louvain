@@ -59,6 +59,24 @@ def main():
         results_file_path = os.path.join(results_dir, "hLouvain_scores.csv")
         # Check if file exists and is not empty to determine if headers are needed
         file_exists_and_not_empty = os.path.isfile(results_file_path) and os.path.getsize(results_file_path) > 0
+        leaderboard_file_path = os.path.join(results_dir, "leaderboard.csv")
+        file_exists_and_not_empty_leaderboard = os.path.isfile(leaderboard_file_path) and os.path.getsize(leaderboard_file_path) > 0
+
+        with open(leaderboard_file_path, mode='a', newline='') as csvfile:
+            fieldnames = ["Algorithm","isPartition","Nodes","Edges", "Modularity"]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            if not file_exists_and_not_empty_leaderboard:
+                writer.writeheader()
+
+            writer.writerow({
+                "Algorithm": "hLouvain",
+                "isPartition": "-1",
+                "Nodes": len(HG.nodes()),
+                "Edges": len(HG.edges()),
+                "Modularity": q2
+            })
+        print(f"Leaderboard saved to {leaderboard_file_path}")
 
         with open(results_file_path, mode='a', newline='') as csvfile:
             fieldnames = [ "Modularity_qC", "Output_Alphas", "Alphas_Config", "Change_Mode", "Change_Frequency"]
@@ -116,7 +134,10 @@ def main():
                     plt.figure(figsize=(12, 10))
 
                     nodes_in_viz = list(H_viz.nodes())
-                    node_to_community_id = {node: A.get(node) for node in nodes_in_viz}
+                    node_to_community_id = {}
+                    for i, community in enumerate(A):
+                        for node in community:
+                            node_to_community_id[node] = i
 
                     # Get unique communities to generate a color for each
                     # Filter out None if A.get() returns None for nodes not in partition

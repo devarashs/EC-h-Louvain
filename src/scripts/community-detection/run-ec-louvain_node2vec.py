@@ -188,6 +188,24 @@ def main():
             'date': datetime.now().strftime('%Y-%m-%d'),
             'timestamp': datetime.now().strftime('%H:%M:%S')
         }
+        leaderboard_file_path = os.path.join(base_dir, "results/leaderboard.csv")
+        file_exists_and_not_empty_leaderboard = os.path.isfile(leaderboard_file_path) and os.path.getsize(leaderboard_file_path) > 0
+
+        with open(leaderboard_file_path, mode='a', newline='') as csvfile:
+            fieldnames = ["Algorithm","isPartition","Nodes","Edges", "Modularity"]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            if not file_exists_and_not_empty_leaderboard:
+                writer.writeheader()
+
+            writer.writerow({
+                "Algorithm": "EC-Louvain",
+                "isPartition": "Node2Vec+kmeans",
+                "Nodes": len(G.nodes()),
+                "Edges": len(G.edges()),
+                "Modularity": modularity
+            })
+        print(f"Leaderboard saved to {leaderboard_file_path}")
 
         # Save metrics
         metrics_path = os.path.join(base_dir, "results/louvain_scores.csv")

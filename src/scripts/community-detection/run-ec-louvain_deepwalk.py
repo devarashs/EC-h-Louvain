@@ -195,6 +195,24 @@ def main():
         # Save this partition
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         save_results(partition, base_dir, f"{cluster_file}_{timestamp}")
+        leaderboard_file_path = os.path.join(base_dir, "results/leaderboard.csv")
+        file_exists_and_not_empty_leaderboard = os.path.isfile(leaderboard_file_path) and os.path.getsize(leaderboard_file_path) > 0
+
+        with open(leaderboard_file_path, mode='a', newline='') as csvfile:
+            fieldnames = ["Algorithm","isPartition","Nodes","Edges", "Modularity"]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            if not file_exists_and_not_empty_leaderboard:
+                writer.writeheader()
+
+            writer.writerow({
+                "Algorithm": "EC-Louvain",
+                "isPartition": "deepwalk+kmeans",
+                "Nodes": len(G.nodes()),
+                "Edges": len(G.edges()),
+                "Modularity": modularity
+            })
+        print(f"Leaderboard saved to {leaderboard_file_path}")
 
     # Process the best result
     if best_partition:
