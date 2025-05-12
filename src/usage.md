@@ -5,8 +5,8 @@ This guide explains how to set up your environment and run the EC-h-Louvain pipe
 ## 1. Create and Activate Conda Environment
 
 ```bash
-conda create -n echlouvain python=3.9
-conda activate echlouvain
+conda create -n cde python=3.12.9
+conda activate cde
 ```
 
 ## 2. Install Dependencies
