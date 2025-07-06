@@ -6,3 +6,5 @@ scikit-learn>=1.0.2
 gensim>=4.1.2
 tqdm>=4.62.0
 python-louvain>=0.16
+node2vec>=0.4.6
+fastjsonschema>=2.19.1
