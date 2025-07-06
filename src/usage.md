@@ -24,6 +24,21 @@ pip install -r requirements.txt
 
 ## 4. Run the Pipeline
 
+### 4.1 Hyper2Vec Pipeline (Recommended for Hypergraphs)
+
+**Why Hyper2Vec?** Unlike Node2Vec and DeepWalk which work on 2-section graphs and lose hypergraph structure, Hyper2Vec performs biased random walks directly on the hypergraph, preserving higher-order relationships and typically achieving better modularity.
+
+Execute the following scripts in order to run **Hyper2Vec -> kmeans -> EC-Louvain**:
+
+```bash
+python -m scripts.hypergraph.generate_hypergraph
+python -m scripts.vector.create_hyper2vec_embeddings
+python -m scripts.partition.hyper2vec_kmeans_partition
+python -m scripts.community-detection.run-ec-louvain_hyper2vec
+```
+
+### 4.2 Alternative Embedding Methods
+
 Execute the following scripts in order to run node2vec -> kmeans -> EC-Louvain:
 
 ```bash
@@ -42,8 +57,18 @@ python -m scripts.hypergraph.generate_2_section_graph
 python -m scripts.vector.create_deepwalk_embeddings
 python -m scripts.partition.deepwalk_kmeans_partition
 python -m scripts.community-detection.run-ec-louvain_deepwalk
-
 ```
+
+Execute the following scripts in order to run **Hyper2Vec -> kmeans -> EC-Louvain** (RECOMMENDED for hypergraphs):
+
+```bash
+python -m scripts.hypergraph.generate_hypergraph
+python -m scripts.vector.create_hyper2vec_embeddings
+python -m scripts.partition.hyper2vec_kmeans_partition
+python -m scripts.community-detection.run-ec-louvain_hyper2vec
+```
+
+### 4.3 Pure Algorithm Comparisons
 
 Execute the following scripts in order to run pure h-louvain on hyperedges:
 
