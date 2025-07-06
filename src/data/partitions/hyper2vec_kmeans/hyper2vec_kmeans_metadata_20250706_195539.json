@@ -1,0 +1,15 @@
+{
+  "inertia": 309.3092956542969,
+  "silhouette_score": 0.17604461312294006,
+  "cluster_sizes": {
+    "0": 86,
+    "1": 208
+  },
+  "num_clusters": 2,
+  "method": "hyper2vec_kmeans",
+  "embedding_method": "hyper2vec",
+  "clustering_method": "kmeans",
+  "optimal_k": 2,
+  "total_nodes": 294,
+  "embedding_dimension": 128
+}

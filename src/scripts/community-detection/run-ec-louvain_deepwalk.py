@@ -34,18 +34,18 @@ def load_initial_clusters(clusters_dir):
     """
     cluster_files = []
 
+
     # Look for cluster files
     for f in os.listdir(clusters_dir):
         file_path = os.path.join(clusters_dir, f)
 
-        # Skip directories
-        if os.path.isdir(file_path):
+        # Skip directories and summary/metadata files
+        if os.path.isdir(file_path) or 'summary' in f or 'metadata' in f:
             continue
 
         # Process different file types
         if f.endswith('.npy'):
             try:
-                # Load npy files (usually contain cluster labels)
                 labels = np.load(file_path)
                 partition = {i: int(label) for i, label in enumerate(labels)}
                 cluster_files.append((f, partition))
@@ -55,11 +55,11 @@ def load_initial_clusters(clusters_dir):
 
         elif f.endswith('.gpickle'):
             try:
-                # Load NetworkX graphs with cluster attributes
+                # Use the correct function for reading gpickle
                 G = nx.read_gpickle(file_path)
                 partition = {}
                 for node, attrs in G.nodes(data=True):
-                    if 'cluster' in attrs:
+                    if isinstance(attrs, dict) and 'cluster' in attrs:
                         partition[node] = attrs['cluster']
                     else:
                         print(f"Warning: Node {node} in {f} has no cluster attribute")
@@ -73,16 +73,16 @@ def load_initial_clusters(clusters_dir):
 
         elif f.endswith('.json'):
             try:
-                # Load JSON partition files
                 with open(file_path, 'r') as json_file:
                     partition = json.load(json_file)
 
-                # Convert string keys to integers if needed
-                partition = {int(k) if isinstance(k, str) and k.isdigit() else k: v
-                             for k, v in partition.items()}
-
-                cluster_files.append((f, partition))
-                print(f"Loaded {f}: {len(set(partition.values()))} clusters")
+                # Only accept if the loaded object is a dict of node: cluster assignments
+                if isinstance(partition, dict) and all(isinstance(v, (int, str)) for v in partition.values()):
+                    partition = {int(k) if isinstance(k, str) and k.isdigit() else k: v for k, v in partition.items()}
+                    cluster_files.append((f, partition))
+                    print(f"Loaded {f}: {len(set(partition.values()))} clusters")
+                else:
+                    print(f"Skipping {f}: not a valid partition mapping.")
             except Exception as e:
                 print(f"Error loading {f}: {e}")
 
