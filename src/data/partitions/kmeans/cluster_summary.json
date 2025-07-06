@@ -1,9 +1,0 @@
-{
-  "num_clusters": 3,
-  "cluster_sizes": {
-    "0": 82,
-    "2": 113,
-    "1": 99
-  },
-  "total_nodes": 294
-}
